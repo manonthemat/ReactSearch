@@ -1,3 +1,6 @@
+const React = require('react'),
+      ReactDOM = require('react-dom');
+
 let Search = React.createClass({
   render: function() {
     return (
