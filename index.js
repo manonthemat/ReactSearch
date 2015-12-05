@@ -1,5 +1,18 @@
 const React = require('react'),
-      ReactDOM = require('react-dom');
+      ReactDOM = require('react-dom'),
+      createStore = require('redux').createStore;
+
+function reducer(state = { currentPage: 1 }, action) {
+  switch (action.type) {
+    case 'SWITCH_PAGE':
+        console.log(action);
+        return Object.assign({}, state, { currentPage: action.page });
+    default:
+      return state;
+  }
+}
+
+let store = createStore(reducer);
 
 let Search = React.createClass({
   render: function() {
@@ -15,16 +28,17 @@ let SearchMain = React.createClass({
   getInitialState: () => {
     return {
       //searchTerm: 'benders',
-      currentPage: 1
+      currentPage: store.getState().currentPage
     };
   },
   componentDidMount: function() {
     this.callAPI(this.state.searchTerm);
   },
   callAPI: function(searchTerm, getResults) {
+    console.log(store.getState().currentPage);
     let justCount = 1;
     let limit = 1000;
-    const resultsShown = 10;
+    const resultsShown = 2;
     if (getResults) {
       justCount = 0;
       limit = resultsShown;
@@ -127,10 +141,12 @@ let SearchPagination = React.createClass({
           p.push(i);
         }
         return p.map(function(page) {
-          let playtimeOver = function() { alert("That was some fun React playing. Now let's add proper architecture and redux."); };
+          let paginate = function() {
+            store.dispatch({type:'SWITCH_PAGE', page: page});
+          };
           if (page !== currentPage) {
             return (
-              <a style={style} onClick={playtimeOver} key={page}>{page} </a>
+              <a style={style} onClick={paginate} key={page}>{page} </a>
             );
           } else {
             return (
